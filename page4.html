@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚡ تسعيرة مولدات</title>
+
+<style>
+body{
+  font-family:Cairo, sans-serif;
+  background:linear-gradient(to bottom,#ffd194,#d1913c);
+  margin:0;
+}
+.header{
+  background:#b45309;
+  color:#fff;
+  text-align:center;
+  padding:15px;
+  font-size:24px;
+  font-weight:bold;
+}
+.container{
+  background:#fff;
+  margin:20px auto;
+  padding:20px;
+  width:90%;
+  max-width:450px;
+  border-radius:15px;
+  box-shadow:0 4px 10px rgba(0,0,0,.3);
+}
+label{
+  display:block;
+  margin-bottom:5px;
+  font-weight:bold
+}
+select,button{
+  width:100%;
+  padding:10px;
+  margin-bottom:15px;
+  font-size:16px;
+  border-radius:8px;
+}
+button{
+  background:#16a34a;
+  color:#fff;
+  border:none;
+  cursor:pointer;
+}
+#result{
+  background:#f4f4f4;
+  padding:10px;
+  border-radius:10px;
+  white-space:pre-wrap;
+  font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">⚡ تسعيرة مولدات</div>
+
+<div class="container">
+
+<label>📅 تاريخ البداية</label>
+<select id="sm"></select>
+<select id="sy"></select>
+
+<label>📅 تاريخ النهاية</label>
+<select id="em"></select>
+<select id="ey"></select>
+
+<label>🔌 نوع المولدة</label>
+<select id="meter">
+  <option value="2">مولدة كاتم صوت (2 متر مكعب)</option>
+  <option value="4">مولدة لحد 250 KV (4 متر مكعب)</option>
+  <option value="6">مولدة أكبر من 250 KV (6 متر مكعب)</option>
+</select>
+
+<button onclick="calc()">💰 احسب</button>
+<div id="result"></div>
+
+</div>
+
+<script>
+function fill(id,from,to){
+  const s=document.getElementById(id);
+  for(let i=from;i<=to;i++){
+    s.innerHTML+=`<option value="${i}">${i}</option>`;
+  }
+}
+fill("sm",1,12); fill("em",1,12);
+fill("sy",2024,2030); fill("ey",2024,2030);
+
+// يحسب فقط الأشهر المكتملة
+function fullMonths(start,end){
+  return (end.getFullYear()-start.getFullYear())*12
+       + (end.getMonth()-start.getMonth()) + 1;
+}
+
+// إذا النهاية مو شهر مكتمل يرجع لآخر شهر قبله
+function normalizeEndDate(d){
+  if(d.getDate()<28){
+    return new Date(d.getFullYear(),d.getMonth(),0);
+  }
+  return d;
+}
+
+function calc(){
+  const start=new Date(sy.value,sm.value-1,1);
+  let end=new Date(ey.value,em.value-1,30);
+  end=normalizeEndDate(end);
+
+  if(start>end){
+    result.innerText="❗ خطأ في التواريخ";
+    return;
+  }
+
+  const cut=new Date(2024,3,30); // 30-4-2024
+  const meterVal=+meter.value;
+  const meterText=meter.options[meter.selectedIndex].text;
+
+  let total=0;
+  let txt=`🔌 ${meterText}\n`;
+  txt+=`📅 من ${start.toLocaleDateString('ar-EG')} إلى ${end.toLocaleDateString('ar-EG')}\n\n`;
+
+  // قبل 1-5-2024
+  if(start<=cut){
+    const e=end<cut?end:cut;
+    const m=fullMonths(start,e);
+    const amount=m*30*meterVal*150;
+    total+=amount;
+    txt+=`⚡ قبل 1-5-2024\n${meterVal} × 150 × 30 × ${m} = ${amount.toLocaleString()} دينار\n\n`;
+  }
+
+  // بعد 1-5-2024
+  const after=start>cut?start:new Date(2024,4,1);
+  if(after<=end){
+    const m=fullMonths(after,end);
+    const amount=m*30*meterVal*200;
+    total+=amount;
+    txt+=`⚡ من 1-5-2024\n${meterVal} × 200 × 30 × ${m} = ${amount.toLocaleString()} دينار\n\n`;
+  }
+
+  txt+=`✅ المجموع الكلي: ${total.toLocaleString()} دينار\n`;
+  
+
+  result.innerText=txt;
+}
+</script>
+
+</body>
+</html>

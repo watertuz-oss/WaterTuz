@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>مركز ماء الطوز - الواردات</title>
+<style>
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f3f4f6;
+  padding: 1rem;
+}
+.container {
+  max-width: 480px; /* عرض أكبر شوية للموبايل */
+  margin: auto;
+  background: white;
+  padding: 1.5rem 1.8rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  direction: rtl;
+}
+h1 {
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.9rem;
+  color: #2563eb;
+  margin-bottom: 1.5rem;
+}
+label {
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  display: block;
+  color: #374151;
+}
+select, input {
+  width: 100%;
+  padding: 0.45rem 0.6rem;
+  border: 1.8px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  color: #1f2937;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+  margin-bottom: 0.5rem;
+  text-align: center;
+  box-sizing: border-box;
+}
+select:focus, input:focus {
+  border-color: #2563eb;
+  outline: none;
+}
+input[readonly] {
+  background-color: #f3f4f6;
+  cursor: not-allowed;
+  color: #6b7280;
+}
+.btn-calc {
+  margin-top: 1.5rem;
+  width: 100%;
+  background: linear-gradient(90deg, #2563eb, #3b82f6);
+  color: white;
+  font-weight: 700;
+  padding: 0.75rem 0;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 5px 15px rgba(37, 99, 235, 0.4);
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+.btn-calc:hover {
+  background: linear-gradient(90deg, #1e40af, #2563eb);
+  box-shadow: 0 8px 25px rgba(37, 99, 235, 0.6);
+}
+.result-box {
+  margin-top: 1.5rem;
+  background-color: #eff6ff;
+  border: 1.5px solid #bfdbfe;
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  color: #1e40af;
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: pre-line;
+  text-align: right;
+}
+.footer {
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.85rem;
+  margin-top: 2rem;
+  font-style: italic;
+}
+/* تحسين الحقول الأفقية للتاريخ */
+.date-row {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+.date-row > div {
+  flex: 1;
+}
+.date-row label {
+  margin-bottom: 0.2rem;
+  text-align: center;
+  display: block;
+  font-weight: 600;
+  color: #374151;
+}
+@media (max-width: 400px) {
+  .date-row {
+    gap: 0.3rem;
+  }
+  .date-row > div {
+    flex: 1 1 0;
+  }
+}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>مركز ماء الطوز</h1>
+<label>نوع المسقف:</label>
+<select id="tariffType">
+  <option value="3">مسقف 3</option>
+  <option value="5">مسقف 5</option>
+  <option value="6">مسقف 6</option>
+</select>
+
+<label>المنطقة:</label>
+<select id="region">
+  <option value="رزكاري">رزكاري</option>
+  <option value="بنار">بنار</option>
+  <option value="الحسين">الحسين</option>
+  <option value="كوماري">كوماري</option>
+  <option value="الطيار">الطيار</option>
+  <option value="اق صو">اق صو</option>
+  <option value="اورطة">اورطة</option>
+  <option value="العسكرية 1">العسكرية 1</option>
+  <option value="العسكري 2">العسكري 2</option>
+  <option value="خلف الكراج">خلف الكراج</option>
+  <option value="العصرية">العصرية</option>
+  <option value="السرور">السرور</option>
+  <option value="منطقة أخرى">منطقة أخرى</option>
+</select>
+
+<label>تاريخ البداية:</label>
+<div class="date-row">
+  <div>
+    <label>يوم</label>
+    <input type="number" id="startDay" value="1" readonly />
+  </div>
+  <div>
+    <label>شهر</label>
+    <select id="startMonth">
+      <!-- شهور -->
+    </select>
+  </div>
+  <div>
+    <label>سنة</label>
+    <select id="startYear">
+      <!-- سنوات -->
+    </select>
+  </div>
+</div>
+
+<label>تاريخ النهاية:</label>
+<div class="date-row">
+  <div>
+    <label>يوم</label>
+    <input type="number" id="endDay" value="31" readonly />
+  </div>
+  <div>
+    <label>شهر</label>
+    <select id="endMonth">
+      <!-- شهور -->
+    </select>
+  </div>
+  <div>
+    <label>سنة</label>
+    <select id="endYear">
+      <!-- سنوات -->
+    </select>
+  </div>
+</div>
+
+<button class="btn-calc" id="calculateBtn">احسب</button>
+
+<div class="result-box" id="resultBox" style="display:none;"></div>
+
+<div class="footer">تصميم وبرمجة بواسطة حسين صابر سليمان</div>
+</div><script>
+// تهيئة خيارات الشهور والسنوات
+const startMonthSelect = document.getElementById('startMonth');
+const endMonthSelect = document.getElementById('endMonth');
+const startYearSelect = document.getElementById('startYear');
+const endYearSelect = document.getElementById('endYear');
+
+const months = Array.from({length: 12}, (_, i) => i + 1);
+const years = Array.from({length: 26}, (_, i) => 2003 + i);
+
+months.forEach(m => {
+  const opt1 = document.createElement('option');
+  opt1.value = m; opt1.text = m;
+  startMonthSelect.add(opt1);
+
+  const opt2 = document.createElement('option');
+  opt2.value = m; opt2.text = m;
+  endMonthSelect.add(opt2);
+});
+
+years.forEach(y => {
+  const opt1 = document.createElement('option');
+  opt1.value = y; opt1.text = y;
+  startYearSelect.add(opt1);
+
+  const opt2 = document.createElement('option');
+  opt2.value = y; opt2.text = y;
+  endYearSelect.add(opt2);
+});
+
+// تعيين القيم الافتراضية
+startMonthSelect.value = 7; startYearSelect.value = 2003;
+endMonthSelect.value = 7; endYearSelect.value = 2003;
+
+// مناطق
+const regions = [
+  {name:'رزكاري', sewerStart:new Date(2003,6,1), sewerIncluded:true, municipalityIncluded:true},
+  {name:'بنار', sewerStart:new Date(2003,6,1), sewerIncluded:true, municipalityIncluded:true},
+  {name:'الحسين', sewerStart:new Date(2003,6,1), sewerIncluded:true, municipalityIncluded:true},
+  {name:'كوماري', sewerStart:new Date(2003,6,1), sewerIncluded:true, municipalityIncluded:true},
+  {name:'الطيار', sewerStart:new Date(2003,6,1), sewerIncluded:true, municipalityIncluded:true},
+
+  {name:'اق صو', sewerStart:new Date(2024,0,1), sewerIncluded:true, municipalityIncluded:true},
+  {name:'اورطة', sewerStart:new Date(2024,0,1), sewerIncluded:true, municipalityIncluded:true},
+  {name:'العسكرية 1', sewerStart:new Date(2024,0,1), sewerIncluded:true, municipalityIncluded:true},
+  {name:'العسكري 2', sewerStart:new Date(2024,0,1), sewerIncluded:true, municipalityIncluded:true},
+  {name:'خلف الكراج', sewerStart:new Date(2024,0,1), sewerIncluded:true, municipalityIncluded:true},
+
+  {name:'العصرية', sewerStart:new Date(2003,6,1), sewerIncluded:false, municipalityIncluded:true},
+  {name:'السرور', sewerStart:new Date(2003,6,1), sewerIncluded:false, municipalityIncluded:true},
+
+  {name:'منطقة أخرى', sewerStart:null, sewerIncluded:false, municipalityIncluded:false}
+];
+
+// جدول التسعيرات
+const pricingPeriods = {
+'3': [
+  {start:new Date(2003,6,1), end:new Date(2007,11,31), water:1000, sewer:0, municipality:0},
+  {start:new Date(2008,0,1), end:new Date(2008,11,31), water:1180, sewer:0, municipality:100},
+  {start:new Date(2009,0,1), end:new Date(2014,11,31), water:1180, sewer:0, municipality:500},
+  {start:new Date(2015,0,1), end:new Date(2015,5,30), water:1180, sewer:0, municipality:500},
+  {start:new Date(2015,6,1), end:new Date(2015,11,31), water:5920, sewer:0, municipality:500},
+  {start:new Date(2016,0,1), end:new Date(2016,5,30), water:2460, sewer:0, municipality:500},
+  {start:new Date(2016,6,1), end:new Date(2016,11,31), water:2460, sewer:2460, municipality:500},
+  {start:new Date(2017,0,1), end:new Date(2017,3,30), water:2460, sewer:2460, municipality:500},
+  {start:new Date(2017,4,1), end:new Date(2017,11,31), water:2460, sewer:2460, municipality:1500},
+  {start:new Date(2018,0,1), end:new Date(2022,5,30), water:2460, sewer:2460, municipality:1500},
+  {start:new Date(2022,6,1), end:new Date(2024,3,30), water:10800, sewer:10800, municipality:1500},
+  {start:new Date(2024,4,1), end:new Date(2024,11,31), water:6600, sewer:6600, municipality:1500},
+  {start:new Date(2025,0,1), end:new Date(2028,11,31), water:6600, sewer:6600, municipality:1500},
+],
+'5': [
+  {start:new Date(2003,6,1), end:new Date(2007,11,31), water:1000, sewer:0, municipality:0},
+  {start:new Date(2008,0,1), end:new Date(2008,11,31), water:2305, sewer:0, municipality:100},
+  {start:new Date(2009,0,1), end:new Date(2014,11,31), water:2305, sewer:0, municipality:500},
+  {start:new Date(2015,0,1), end:new Date(2015,5,30), water:2305, sewer:0, municipality:500},
+  {start:new Date(2015,6,1), end:new Date(2015,11,31), water:10120, sewer:0, municipality:500},
+  {start:new Date(2016,0,1), end:new Date(2016,5,30), water:4560, sewer:0, municipality:500},
+  {start:new Date(2016,6,1), end:new Date(2016,11,31), water:4560, sewer:4560, municipality:500},
+  {start:new Date(2017,0,1), end:new Date(2017,3,30), water:4560, sewer:4560, municipality:500},
+  {start:new Date(2017,4,1), end:new Date(2017,11,31), water:4560, sewer:4560, municipality:1500},
+  {start:new Date(2018,0,1), end:new Date(2022,5,30), water:4560, sewer:4560, municipality:1500},
+  {start:new Date(2022,6,1), end:new Date(2024,3,30), water:15600, sewer:15600, municipality:1500},
+  {start:new Date(2024,4,1), end:new Date(2024,11,31), water:10800, sewer:10800, municipality:1500},
+  {start:new Date(2025,0,1), end:new Date(2028,11,31), water:10800, sewer:10800, municipality:1500},
+],
+'6': [
+  {start:new Date(2003,6,1), end:new Date(2007,11,31), water:1000, sewer:0, municipality:0},
+  {start:new Date(2008,0,1), end:new Date(2008,11,31), water:4355, sewer:0, municipality:100},
+  {start:new Date(2009,0,1), end:new Date(2014,11,31), water:4355, sewer:0, municipality:500},
+  {start:new Date(2015,0,1), end:new Date(2015,5,30), water:4355, sewer:0, municipality:500},
+  {start:new Date(2015,6,1), end:new Date(2015,11,31), water:14320, sewer:0, municipality:500},
+  {start:new Date(2016,0,1), end:new Date(2016,5,30), water:6660, sewer:0, municipality:500},
+  {start:new Date(2016,6,1), end:new Date(2016,11,31), water:6660, sewer:6660, municipality:500},
+  {start:new Date(2017,0,1), end:new Date(2017,3,30), water:6660, sewer:6660, municipality:500},
+  {start:new Date(2017,4,1), end:new Date(2017,11,31), water:6660, sewer:6660, municipality:1500},
+  {start:new Date(2018,0,1), end:new Date(2022,5,30), water:6660, sewer:6660, municipality:1500},
+  {start:new Date(2022,6,1), end:new Date(2024,3,30), water:21000, sewer:21000, municipality:1500},
+  {start:new Date(2024,4,1), end:new Date(2024,11,31), water:15600, sewer:15600, municipality:1500},
+  {start:new Date(2025,0,1), end:new Date(2028,11,31), water:15600, sewer:15600, municipality:1500},
+],
+};
+
+// تحديث اليوم الأخير عند تغيير الشهر/السنة للنهاية
+function updateEndDay() {
+  const y = parseInt(endYearSelect.value);
+  const m = parseInt(endMonthSelect.value);
+  const lastDay = new Date(y, m, 0).getDate();
+  document.getElementById('endDay').value = lastDay;
+}
+endMonthSelect.addEventListener('change', updateEndDay);
+endYearSelect.addEventListener('change', updateEndDay);
+
+// الحساب
+document.getElementById('calculateBtn').addEventListener('click', function(){
+  const tariffType = document.getElementById('tariffType').value;
+  const regionName = document.getElementById('region').value;
+  const startDate = new Date(parseInt(startYearSelect.value), parseInt(startMonthSelect.value)-1, 1);
+  const endDate = new Date(parseInt(endYearSelect.value), parseInt(endMonthSelect.value)-1, parseInt(document.getElementById('endDay').value));
+
+  if (startDate > endDate) {
+    alert('تاريخ البداية يجب أن يكون قبل تاريخ النهاية');
+    return;
+  }
+
+  const regionObj = regions.find(r => r.name === regionName);
+  if (!regionObj) return;
+
+  const totalMonths = (endDate.getFullYear()-startDate.getFullYear())*12 + (endDate.getMonth()-startDate.getMonth()) + 1;
+
+  let waterTotal=0, sewerTotal=0, municipalityTotal=0;
+  const periods = pricingPeriods[tariffType];
+
+  for(let i=0;i<totalMonths;i++){
+    const currentMonth = new Date(startDate.getFullYear(), startDate.getMonth()+i, 1);
+    const period = periods.find(p=>currentMonth>=p.start && currentMonth<=p.end);
+    if(period){
+      waterTotal += period.water;
+      if(regionObj.sewerIncluded && regionObj.sewerStart && currentMonth >= regionObj.sewerStart){
+        sewerTotal += period.sewer;
+      }
+      if(regionObj.municipalityIncluded){
+        municipalityTotal += period.municipality;
+      }
+    }
+  }
+
+  const total = waterTotal + sewerTotal + municipalityTotal;
+  const resultBox = document.getElementById('resultBox');
+  resultBox.style.display = 'block';
+  resultBox.innerHTML =
+    `مجموع الفترات: ${totalMonths} شهر\n`+
+    `أجور الماء: ${waterTotal.toLocaleString()} د.ع\n`+
+    `أجور المجاري: ${sewerTotal.toLocaleString()} د.ع\n`+
+    `أجور البلدية: ${municipalityTotal.toLocaleString()} د.ع\n`+
+    `------------------------------\n`+
+    `المجموع الكلي: ${total.toLocaleString()} د.ع`;
+});
+</script>
+</body>
+</html>

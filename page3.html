@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تسعيرة التجاري</title>
+<style>
+  body {
+    font-family: 'Cairo', sans-serif;
+    background: linear-gradient(to bottom, #a1c4fd, #c2e9fb);
+    margin: 0;
+    padding: 0;
+  }
+  .header {
+    text-align: center;
+    padding: 15px;
+    font-size: 24px;
+    font-weight: bold;
+    color: #fff;
+    background: #007acc;
+    border-bottom: 3px solid #005fa3;
+  }
+  .subheader {
+    text-align: center;
+    color: #fff;
+    font-size: 18px;
+    margin-top: -5px;
+    margin-bottom: 10px;
+  }
+  .container {
+    background: #fff;
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    width: 90%;
+    max-width: 450px;
+  }
+  label {
+    font-size: 16px;
+    display: block;
+    margin-bottom: 8px;
+  }
+  select {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-bottom: 15px;
+  }
+  button {
+    width: 100%;
+    background: #198754;
+    color: white;
+    font-size: 18px;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  button:hover { background: #157347; }
+  #result {
+    margin-top: 15px;
+    font-size: 16px;
+    font-weight: bold;
+    background: #f6f6f6;
+    padding: 10px;
+    border-radius: 10px;
+    white-space: pre-wrap;
+  }
+  .footer {
+    text-align: center;
+    padding: 10px;
+    color: #fff;
+    background: #007acc;
+    border-top: 3px solid #005fa3;
+  }
+  .ok {
+    color: green;
+  }
+</style>
+</head>
+<body>
+  <div class="header">تسعيرة التجاري</div>
+  <div class="container">
+    <label>📅 تاريخ البداية:</label>
+    <div style="display:flex;gap:5px;">
+      <select disabled><option>1</option></select>
+      <select id="startMonth"></select>
+      <select id="startYear"></select>
+    </div>
+
+    <label>📅 تاريخ النهاية:</label>
+    <div style="display:flex;gap:5px;">
+      <select id="endDay" disabled></select>
+      <select id="endMonth"></select>
+      <select id="endYear"></select>
+    </div>
+
+    <label>🔧 نوع الأنبوب (متر مكعب):</label>
+    <select id="pipeSize"></select>
+
+    <label>🚰 المجاري:</label>
+    <select id="sewerIncluded">
+      <option value="no">❌ غير مشمول بالمجاري</option>
+      <option value="yes">✅ مشمول بالمجاري (من 1-1-2025)</option>
+    </select>
+
+    <button onclick="calculateAmount()">💰 احسب المبلغ</button>
+    <div id="result"></div>
+  </div>
+
+  <div class="footer">تصميم بواسطة حسين صابر سليمان</div>
+
+<script>
+const periods = [
+  { start: '2003-07-01', end: '2007-12-31', price: 60 },
+  { start: '2008-01-01', end: '2015-06-30', price: 80 },
+  { start: '2015-07-01', end: '2022-12-31', price: 150 },
+  { start: '2023-01-01', end: '2028-12-31', price: 200 }
+];
+const sewerPrice = 200;
+
+function populateSelect(id, from, to) {
+  const select = document.getElementById(id);
+  for (let i = from; i <= to; i++) {
+    const option = document.createElement("option");
+    option.value = i;
+    option.text = i;
+    select.appendChild(option);
+  }
+}
+function populatePipeOptions() {
+  const select = document.getElementById("pipeSize");
+  for (let i = 1; i <= 30; i++) {
+    const option = document.createElement("option");
+    option.value = i;
+    option.text = `${i} م³`;
+    select.appendChild(option);
+  }
+}
+
+populateSelect("startMonth", 1, 12);
+populateSelect("endMonth", 1, 12);
+populateSelect("startYear", 2003, 2028);
+populateSelect("endYear", 2003, 2028);
+populatePipeOptions();
+
+function updateEndDay() {
+  const em = parseInt(document.getElementById("endMonth").value);
+  const ey = parseInt(document.getElementById("endYear").value);
+  const endDaySelect = document.getElementById("endDay");
+  const lastDay = new Date(ey, em, 0).getDate();
+  endDaySelect.innerHTML = '';
+  const option = document.createElement("option");
+  option.value = lastDay;
+  option.text = lastDay;
+  endDaySelect.appendChild(option);
+}
+document.getElementById("endMonth").addEventListener("change", updateEndDay);
+document.getElementById("endYear").addEventListener("change", updateEndDay);
+window.onload = updateEndDay;
+
+function monthDiff(d1, d2) {
+  const years = d2.getFullYear() - d1.getFullYear();
+  const months = d2.getMonth() - d1.getMonth();
+  return years * 12 + months + 1;
+}
+
+function calculateAmount() {
+  const sm = parseInt(document.getElementById("startMonth").value);
+  const sy = parseInt(document.getElementById("startYear").value);
+  const em = parseInt(document.getElementById("endMonth").value);
+  const ey = parseInt(document.getElementById("endYear").value);
+  const eday = parseInt(document.getElementById("endDay").value);
+  const pipeSize = parseInt(document.getElementById("pipeSize").value);
+  const sewerIncluded = document.getElementById("sewerIncluded").value === "yes";
+
+  const start = new Date(sy, sm - 1, 1);
+  const end = new Date(ey, em - 1, eday);
+  const sewerStart = new Date(2025, 0, 1);
+
+  if (start > end) {
+    document.getElementById('result').innerText = '❗ تأكد من أن تاريخ البداية أقدم من تاريخ النهاية.';
+    return;
+  }
+
+  let totalWater = 0;
+  let totalSewer = 0;
+  let details = `📅 المدة من ${start.toLocaleDateString('ar-EG')} إلى ${end.toLocaleDateString('ar-EG')}\n\n`;
+
+  // حساب الماء حسب الفترات
+  periods.forEach(period => {
+    const ps = new Date(period.start);
+    const pe = new Date(period.end);
+    const actualStart = (start > ps) ? start : ps;
+    const actualEnd = (end < pe) ? end : pe;
+    if (actualStart <= actualEnd) {
+      const months = monthDiff(actualStart, actualEnd);
+      const days = months * 30;
+      const amount = days * pipeSize * period.price;
+      totalWater += amount;
+      details += `📆 من ${actualStart.toLocaleDateString('ar-EG')} إلى ${actualEnd.toLocaleDateString('ar-EG')} = ${period.price} × ${pipeSize}م³ × ${months} شهر × 30 يوم = ${amount.toLocaleString()} دينار\n`;
+    }
+  });
+
+  // حساب المجاري فقط من 1-1-2025 إذا مشمول
+  if (sewerIncluded) {
+    const sewerEffectiveStart = start > sewerStart ? start : sewerStart;
+    if (sewerEffectiveStart <= end) {
+      const months = monthDiff(sewerEffectiveStart, end);
+      const days = months * 30;
+      totalSewer = days * pipeSize * sewerPrice;
+      details += `🚰 مجاري من ${sewerEffectiveStart.toLocaleDateString('ar-EG')} إلى ${end.toLocaleDateString('ar-EG')} = ${sewerPrice} × ${pipeSize}م³ × ${months} شهر × 30 يوم = ${totalSewer.toLocaleString()} دينار\n`;
+    }
+  }
+
+  const total = totalWater + totalSewer;
+  details += `\n✅ المجموع الكلي: ${total.toLocaleString()} دينار`;
+
+  document.getElementById("result").innerHTML = details;
+}
+</script>
+</body>
+</html>
