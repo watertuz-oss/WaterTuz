@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
+
+<meta charset="UTF-8">
+
 <link rel="manifest" href="manifest.json">
 
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="مركز ماء طوز">
-<meta charset="UTF-8">
 
-<!-- منع التكبير والتصغير نهائياً -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <title>مركز ماء طوز – الواردات</title>
@@ -28,7 +29,7 @@ html, body{
   overscroll-behavior:none;
 }
 
-/* ===== Top Bar ===== */
+/* TopBar */
 #topbar{
   position:fixed;
   top:0;
@@ -49,7 +50,7 @@ html, body{
   font-weight:bold;
 }
 
-/* ===== Hamburger (يمين) ===== */
+/* زر القائمة */
 #hamburger{
   position:absolute;
   right:15px;
@@ -64,7 +65,6 @@ html, body{
 
 #hamburger span{
   height:4px;
-  width:100%;
   background:#fff;
   border-radius:3px;
   transition:0.3s;
@@ -80,7 +80,7 @@ html, body{
   transform:rotate(-45deg) translate(6px,-6px);
 }
 
-/* ===== Sidebar ===== */
+/* القائمة */
 #sidebar{
   position:fixed;
   top:0;
@@ -92,7 +92,6 @@ html, body{
   transition:0.35s;
   padding-top:70px;
   z-index:999;
-  box-shadow:-4px 0 10px rgba(0,0,0,0.4);
 }
 
 #sidebar button{
@@ -104,14 +103,13 @@ html, body{
   text-align:right;
   font-size:18px;
   cursor:pointer;
-  transition:0.25s;
 }
 
 #sidebar button:hover{
   background:rgba(255,255,255,0.15);
 }
 
-/* ===== Overlay ===== */
+/* overlay */
 #overlay{
   position:fixed;
   top:0;
@@ -122,7 +120,7 @@ html, body{
   z-index:998;
 }
 
-/* ===== Content ===== */
+/* المحتوى */
 #content{
   margin-top:60px;
   height:calc(100vh - 60px);
@@ -133,24 +131,19 @@ iframe{
   height:100%;
   border:none;
   background:#fff;
-  touch-action:manipulation;
 }
 </style>
 </head>
 
 <body>
 
-<!-- Top Bar -->
 <div id="topbar">
   <div id="app-title">قائمة تسعيرات 👉</div>
   <div id="hamburger" onclick="toggleMenu()">
-    <span></span>
-    <span></span>
-    <span></span>
+    <span></span><span></span><span></span>
   </div>
 </div>
 
-<!-- Sidebar -->
 <div id="sidebar">
   <button onclick="openPage('page1.html')">🏠 السكني</button>
   <button onclick="openPage('page2.html')">🏢 الحكومي</button>
@@ -161,16 +154,15 @@ iframe{
 
 <div id="overlay" onclick="closeMenu()"></div>
 
-<!-- Content -->
 <div id="content">
   <iframe id="mainFrame" src="page1.html"></iframe>
 </div>
 
 <script>
+let opened=false;
 const sidebar=document.getElementById("sidebar");
 const overlay=document.getElementById("overlay");
 const hamburger=document.getElementById("hamburger");
-let opened=false;
 
 function toggleMenu(){
   opened ? closeMenu() : openMenu();
@@ -190,16 +182,32 @@ function closeMenu(){
   opened=false;
 }
 
-function openPage(page){
-  document.getElementById("mainFrame").src=page;
+function openPage(p){
+  document.getElementById("mainFrame").src=p;
   closeMenu();
 }
 </script>
+
+<!-- Service Worker + تحديث تلقائي -->
 <script>
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("service-worker.js")
-    .then(() => console.log("Service Worker Registered"));
+  navigator.serviceWorker.register("service-worker.js").then(reg => {
+
+    reg.onupdatefound = () => {
+      const newWorker = reg.installing;
+
+      newWorker.onstatechange = () => {
+        if (newWorker.state === "installed") {
+          if (navigator.serviceWorker.controller) {
+            location.reload();
+          }
+        }
+      };
+    };
+
+  });
 }
 </script>
+
 </body>
 </html>
